@@ -1,0 +1,78 @@
+{% load static %}
+<div class="container-fluid">
+    <form action="" id="trajet-form">
+        <input type="hidden" name="id" value="{{trajet.id}}">
+        <div class="mb-3">
+            <label for="depart" class="control-label">Lieu de départ</label>
+            <input type="text" id="depart" name="depart" class="form-control form-control-sm rounded-0" value="{{trajet.depart}}" required>
+            <label for="arrive" class="control-label">Lieu de destination</label>
+            <input type="text" id="arrive" name="arrive" class="form-control form-control-sm rounded-0" value="{{trajet.arrive}}" required>
+
+        </div>
+        <div class="mb-3">
+            <label for="status" class="control-label">Status</label>
+            <select type="text" id="status" name="status" class="form-select form-select-sm rounded-0" required>
+                {% if trajet.status == '1' %}
+                <option value="1" selected>En service</option>
+                {% else %}
+                <option value="1">En service</option>
+                {% endif %}
+                {% if trajet.status == '2' %}
+                <option value="2" selected>Hors service</option>
+                {% else %}
+                <option value="2">Hors service</option>
+                {% endif %}
+            </select>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#trajet-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            start_loader();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save-airport' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("Erreur lors du traitement des données", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        location.reload()
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("Erreur lors du traitement des données", 'error');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,160 @@
+{% load static %}
+<div class="container-fluid">
+    <form action="" id="flight-form">
+        <input type="hidden" name="id" value="{{flight.id}}">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="mb-3">
+                    <label for="code" class="control-label">Code vol</label>
+                    <input type="text" id="code" name="code" class="form-control form-control-sm rounded-0" value="{{flight.code}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="compagnie" class="control-label">Compagnie</label>
+                    <select type="text" id="compagnie" name="compagnie" class="form-select form-select-sm rounded-0 select2" required multiple>
+                        {% if not vol.compagnies %}
+                        <option value=""  disabled selected></option>
+                        {% else %}
+                        <option value="" disabled ></option>
+                        {% endif %}
+                        {% for compagnie in compagnies %}
+                            {% if compagnie.id == vol.compagnies.id %}
+                            <option value="{{compagnie.id}}" selected>{{compagnie.nom}}</option>
+                            {% else %}
+                            <option value="{{compagnie.id}}">{{compagnie.nom}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="prix" class="control-label">Prix vol</label>
+                    <input type="text" id="prix" name="prix" class="form-control form-control-sm rounded-0" value="{{vol.prix}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="depart_trajet" class="control-label">Lieu depart</label>
+                    <select type="text" id="depart_trajet" name="depart_trajet" class="form-select form-select-sm rounded-0 select2" required>
+                        {% if not vol.depart %}
+                        <option value=""  disabled selected></option>
+                        {% else %}
+                        <option value="" disabled ></option>
+                        {% endif %}
+                        {% for trajet in trajets %}
+                            {% if trajet.id == vol.depart.id %}
+                            <option value="{{trajet.id}}" selected>{{trajet.depart}}</option>
+                            {% else %}
+                            <option value="{{trajet.id}}">{{trajet.depart}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="destination_trajet" class="control-label">Destination</label>
+                    <select type="text" id="destination_trajet" name="destination_trajet" class="form-select form-select-sm rounded-0 select2" required>
+                        {% if not vol.arrive %}
+                        <option value=""  disabled selected></option>
+                        {% else %}
+                        <option value="" disabled ></option>
+                        {% endif %}
+                        {% for trajet in trajets %}
+                            {% if trajet.id == vol.arrive.id %}
+                            <option value="{{trajet.id}}" selected>{{trajet.arrive}}</option>
+                            {% else %}
+                            <option value="{{trajet.id}}">{{trajet.arrive}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="mb-3">
+                    <label for="date-depart" class="control-label">Date depart</label>
+                    <input type="datetime-local" id="date-depart" name="date-depart" class="form-control form-control-sm rounded-0" value="{{vol.date_depart|date:'Y-m-d\TH:i'}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="date-arrive" class="control-label">Date arrive</label>
+                    <input type="datetime-local" id="date-arrive" name="date-arrive" class="form-control form-control-sm rounded-0" value="{{vol.date_arrive|date:'Y-m-d\TH:i'}}" required>
+                </div>
+                <!-- <div class="mb-3">
+                    <label for="business_class_slots" class="control-label">No. of Business Class Available Seats</label>
+                    <input type="number" id="business_class_slots" name="business_class_slots" class="form-control form-control-sm rounded-0 text-end" value="{{flight.business_class_slots}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="economy_slots" class="control-label">No. of Economy Available Seats</label>
+                    <input type="number" id="economy_slots" name="economy_slots" class="form-control form-control-sm rounded-0 text-end" value="{{flight.economy_slots}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="business_class_price" class="control-label">No. of Business Class Available Seats</label>
+                    <input type="text" pattern="^[0-9/.]$+" id="business_class_price" name="business_class_price" class="form-control form-control-sm rounded-0 text-end" value="{{flight.business_class_price}}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="economy_price" class="control-label">No. of Economy Available Seats</label>
+                    <input type="text" pattern="^[0-9/.]$+" id="economy_price" name="economy_price" class="form-control form-control-sm rounded-0 text-end" value="{{flight.economy_price}}" required>
+                </div> -->
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#uni_modal').on('shown.bs.modal', function() {
+            $('.select2').select2({
+                placeholder: "Selectionner par ici",
+                width: "100%",
+                dropdownParent: $('#uni_modal'),
+                containerCssClass: 'form-control form-control-sm rounded-0'
+            })
+        })
+        $('#flight-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            // if ($('#depart').val() == $('#arrive').val()) {
+            //     el.text("Saisie invalide.")
+            //     _this.append(el)
+            //     el.show('slow')
+            //     $('html, body, .modal').scrollTop(0)
+            //     return false
+            // }
+            start_loader();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save-flight' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("Probleme ebentuel", 'Erreur');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        location.reload()
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.html(resp.msg)
+                    } else {
+                        el.text("Probleme ebentuel", 'Erreur');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,77 @@
+{% extends 'base.html' %} {% load static %} {% block pageContent %}
+<section class="py-4">
+    <div class="container">
+        <h3 class="fw-bolder text-center">Rechercher un vol</h3>
+        <center>
+            <hr class="bg-primary opacity-100" style="height:3px" width="5%">
+        </center>
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8 col-sm-12 col-xs-12">
+                <div class="card rounded-0 shadow">
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <form action="" id="search-flight">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="mb-3">
+                                            <label for="lieu_depart" class="control-label">Depart</label>
+                                            <select type="text" id="lieu_depart" name="lieu_depart" class="form-select form-select-sm rounded-0 select2" required>
+                                                <option value=""  disabled selected></option>
+                                                {% for trajet in trajets %}
+                                                    <option value="{{trajet.id}}">{{trajet.depart}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="lieu_destination" class="control-label">To</label>
+                                            <select type="text" id="lieu_destination" name="lieu_destination" class="form-select form-select-sm rounded-0 select2" required>
+                                                <option value=""  disabled selected></option>
+                                                {% for trajet in trajets %}
+                                                    <option value="{{airport.id}}">{{trajet.arrive}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="date_depart" class="control-label">Date de depart</label>
+                                            <input type="date" id="date_depart" name="date_depart" class="form-control form-control-sm rounded-0" value="" required>
+                                        </div>
+                                        <div class="text-center mb-3">
+                                            <button class="btn btn-primary bg-gradient-dark btn-lg rounded-pill w-100"><i class="fa fa-search"></i> Recherche de vols</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock pageContent %} {% block ScriptBlock %}
+<script>
+    $(function() {
+        $('.select2').select2({
+            placeholder: "Choisissez ici",
+            width: "100%",
+            containerCssClass: 'form-control form-control-sm rounded-0'
+        })
+        $('#search-flight').submit(function(e) {
+            e.preventDefault()
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if ($('#lieu_depart').val() == $('#lieu_destination').val()) {
+                el.text("Trajet invalide ou verifier vos info saisies.")
+                _this.append(el)
+                el.show('slow')
+                $('html, body, .modal').scrollTop(0)
+                return false
+            }
+            location.href = "{% url 'search-result' %}/" + $('#lieu_depart').val() + "/" + $('#lieu_destination').val() + "/" + $('#date_depart').val()
+        })
+    })
+</script>
+{% endblock ScriptBlock %}

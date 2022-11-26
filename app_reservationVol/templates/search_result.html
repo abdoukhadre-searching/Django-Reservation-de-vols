@@ -1,0 +1,121 @@
+{% extends 'base.html' %} {% load static %} {% load humanize %} {% block pageContent %}
+<style>
+    .al-logo {
+        height: 5em;
+        width: 5em;
+        object-fit: scale-down;
+        object-position: center center;
+    }
+</style>
+<section class="py-4">
+    <div class="container">
+        <h3 class="fw-bolder text-center">Search Result</h3>
+        <center>
+            <hr class="bg-primary opacity-100" style="height:3px" width="5%">
+        </center>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                <div class="card rounded-0 shadow">
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="list-group">
+                                {% for vol in vols %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 align-items-center">
+                                        <div class="col-auto text-center px-3">
+                                            <img src="{% if vol.compagnies.image_path %}{{ vol.compagnies.image_path.url}}{% else %}{% static 'assets/default/img/no-image-available.png' %}{% endif %}" alt="{{ vol.compagnies.name}}" class="img-thumbnail rounded-circle al-logo">
+                                        </div>
+                                        <div class="col-auto flex-shrink-1 flex-grow-1">
+                                            <h4 class="m-0"><b>Vols - {{vol.code}}</b></h4>
+                                            <hr>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <!-- <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Plane:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{flight.air_craft_code}}</dd>
+                                                    </dl> -->
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Lieu de depart:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{vol.trajet.depart}}</dd>
+                                                    </dl>
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Destination:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{vol.trajet.arrive}}</dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Compagnie:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{vol.compagnies.nom}}</dd>
+                                                    </dl>
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Date de depart:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{vol.date_depart |date:"F d, Y h:i A"}}</dd>
+                                                    </dl>
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Date d'arrive:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{vol.date_arrive|date:"F d, Y h:i A"}}</dd>
+                                                    </dl>
+                                                </div>
+                                                <!-- <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Business Class Slot:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{flight.b_slot|intcomma}}</dd>
+                                                    </dl>
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Business Class Price:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{flight.business_class_price|intcomma}}</dd>
+                                                    </dl>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Economy Slot:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{flight.e_slot|intcomma}}</dd>
+                                                    </dl>
+                                                    <dl class="d-flex m-0">
+                                                        <dt class="m-0 fw-bold col-auto px-1">Economy Price:</dt>
+                                                        <dd class="m-0 col-auto flex-shrink-1 flex-grow-1">{{flight.economy_price|intcomma}}</dd>
+                                                    </dl>
+                                                </div> -->
+                                            </div>
+                                            <div class="my-2 text-center">
+                                                <a href="{% url 'reserve-form' vol.id %}" class="btn btn-primary bg gradient bg-primary w-50 rounded-pill">Reserver un Ticket</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock pageContent %} {% block ScriptBlock %}
+<script>
+    $(function() {
+        $('.select2').select2({
+            placeholder: "Sélectionner à ce niveau",
+            width: "100%",
+            containerCssClass: 'form-control form-control-sm rounded-0'
+        })
+        $('#search-flight').submit(function(e) {
+            e.preventDefault()
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if ($('#depart').val() == $('#arrive').val()) {
+                el.text("Trajet invalide verifier le lieu de depart ou la destination")
+                _this.append(el)
+                el.show('slow')
+                $('html, body, .modal').scrollTop(0)
+                return false
+            }
+        })
+    })
+</script>
+{% endblock ScriptBlock %}

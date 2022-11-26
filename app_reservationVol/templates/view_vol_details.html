@@ -1,0 +1,55 @@
+{% load static %} {% load humanize %}
+<style>
+    #uni_modal .modal-footer {
+        display: none
+    }
+    
+    #uni_modal .modal-sub-footer {
+        display: flex
+    }
+    
+    #airline-logo {
+        max-width: 3em;
+        max-height: 3em;
+        object-fit: scale-down;
+        object-position: center center;
+    }
+</style>
+<div class="container-fluid" id="e-details">
+    <div class="lh-1">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <dl>
+                    <dt>Code vol</dt>
+                    <dd class="ps-4">{{vol.code}}</dd>
+                    <dt>Prix vol</dt>
+                    <dd class="ps-4">{{vol.prix}}</dd>
+                    <dt>Compagnie</dt>
+                    <dd class="ps-4"><img src="{% if vol.compagnies.image_path %}{{ vol.compagnies.image_path.url}}{% else %}{% static 'assets/default/img/no-image-available.png' %}{% endif %}" alt="" class="img-thumbnail rounded-circle" id="airline-logo"> {{vol.compagnies.nom}}</dd>
+                    <dt>Air Craft/Plane Code</dt>
+                    <dd class="ps-4">{{vol.air_craft_code}}</dd>
+                    <dt>Lieu de départ</dt>
+                    <dd class="ps-4">{{vol.trajet.depart}}</dd>
+                    <dt>Destination</dt>
+                    <dd class="ps-4">{{vol.trajet.arrive}}</dd>
+                </dl>
+            </div>
+            <!-- <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <dl>
+                    <dt>Departure Date and Time</dt>
+                    <dd class="ps-4">{{vol.departure|date:"F d, Y h:i A"}}</dd>
+                    <dt>Estimated Time of Arrival</dt>
+                    <dd class="ps-4">{{vol.estimated_arrival|date:"F d, Y h:i A"}}</dd>
+                    <dt>Business Class Available Slots</dt>
+                    <dd class="ps-4">{{vol.business_class_slots|intcomma}}</dd>
+                    <dt>Economy Available Slots</dt>
+                    <dd class="ps-4">{{vol.economy_slots|intcomma}}</dd>
+                    <dt>Business Class Available Price</dt>
+                    <dd class="ps-4">{{vol.business_class_price|intcomma}}</dd>
+                    <dt>Economy Available Price</dt>
+                    <dd class="ps-4">{{vol.economy_price|intcomma}}</dd>
+                </dl>
+            </div> -->
+        </div>
+    </div>
+</div>
